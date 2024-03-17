@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Post, FollowUser, LikePost
+from .models import Post, FollowUser, LikePost, Comment
 from django.contrib.auth.decorators import login_required
 from authentication.models import MyUser
 
@@ -9,7 +9,18 @@ def home_view(request):
     posts = Post.objects.filter(is_published=True)
     users = MyUser.objects.all()[:4]
     profile = MyUser.objects.filter(user=request.user).first()
-    return render(request, 'index.html', context={'posts': posts, 'users': users, 'profile': profile})
+    comments = Comment.objects.all()
+    context = {'posts': posts,
+               'users': users,
+               'profile': profile,
+               'comments': comments}
+    if request.method == 'POST':
+        data = request.POST
+        # print(data)
+        obj = Comment.objects.create(author=profile, message=data['message'], post_id=data['post_id'])
+        obj.save()
+        return redirect(f'/#{data["post_id"]}')
+    return render(request, 'index.html', context=context)
 
 
 @login_required(login_url='auth/login')

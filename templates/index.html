@@ -276,9 +276,9 @@
                     </div>
 
                     <div uk-lightbox>
-                            <a href="{{ post.image.url }}">
-                                <img src="{{ post.image.url }}" alt="">
-                            </a>
+                        <a href="{{ post.image.url }}">
+                            <img src="{{ post.image.url }}" alt="">
+                        </a>
                     </div>
 
 
@@ -331,38 +331,34 @@
                         </div>
 
                         <div class="border-t pt-4 space-y-4 ">
-                            <div class="flex">
-                                <div class="w-10 h-10 rounded-full relative flex-shrink-0">
-                                    <img src="{% static 'assets/images/avatars/avatar-1.jpg' %}" alt=""
-                                         class="absolute h-full rounded-full w-full">
+                            {% for comment in comments %}
+                                <div class="flex">
+                                    <div class="w-10 h-10 rounded-full relative flex-shrink-0">
+                                        <img src="{{ comment.author.profile_picture.url }}" alt=""
+                                             class="absolute h-full rounded-full w-full">
+                                    </div>
+                                    <div class="text-gray-700 py-2 px-3 rounded-md bg-gray-100 h-full relative lg:ml-5 ml-2 lg:mr-20   ">
+                                        <p class="leading-6">{{ comment.message }}
+                                            <urna class="i uil-heart"></urna>
+                                            <i
+                                                    class="uil-grin-tongue-wink"> </i></p>
+                                        <div class="absolute w-3 h-3 top-3 -left-1 bg-gray-100 transform rotate-45 "></div>
+                                    </div>
                                 </div>
-                                <div class="text-gray-700 py-2 px-3 rounded-md bg-gray-100 h-full relative lg:ml-5 ml-2 lg:mr-20   ">
-                                    <p class="leading-6">Y'all like billie eillish?
-                                        <urna class="i uil-heart"></urna>
-                                        <i
-                                                class="uil-grin-tongue-wink"> </i></p>
-                                    <div class="absolute w-3 h-3 top-3 -left-1 bg-gray-100 transform rotate-45 "></div>
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <div class="w-10 h-10 rounded-full relative flex-shrink-0">
-                                    <img src="{% static 'assets/images/avatars/avatar-1.jpg' %}" alt=""
-                                         class="absolute h-full rounded-full w-full">
-                                </div>
-                                <div class="text-gray-700 py-2 px-3 rounded-md bg-gray-100 h-full relative lg:ml-5 ml-2 lg:mr-20   ">
-                                    <p class="leading-6">She's my favourite <i class="uil-grin-tongue-wink-alt"></i>
-                                    </p>
-                                    <div class="absolute w-3 h-3 top-3 -left-1 bg-gray-100 transform rotate-45 "></div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
 
                         <div class="bg-gray-100 bg-gray-100 rounded-full rounded-md relative ">
-                            <input type="text" placeholder="post a comment" class="bg-transparent max-h-10 shadow-none">
-                            <div class="absolute bottom-0 flex h-full items-center right-0 right-3 text-xl space-x-2">
-                                <a href="#"> <i class="uil-image"></i></a>
-                                <a href="#"> <i class="uil-video"></i></a>
-                            </div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input name="post_id" value="{{ post.id }}" hidden="hidden">
+                                <input name="message" type="text" placeholder="post a comment"
+                                       class="bg-transparent max-h-10 shadow-none">
+                                <div class="absolute bottom-0 flex h-full items-center right-0 right-3 text-xl space-x-2">
+                                    <a href="#"> <i class="uil-image"></i></a>
+                                    <button type="submit"><i class="uil-telegram-alt"></i></button>
+                                </div>
+                            </form>
                         </div>
 
                     </div>
