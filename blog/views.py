@@ -10,10 +10,14 @@ def home_view(request):
     users = MyUser.objects.all()[:4]
     profile = MyUser.objects.filter(user=request.user).first()
     comments = Comment.objects.all()
+
+    for post in posts:
+        # post.comments = list(filter(lambda c: c.post.id == post.id, comments))
+        post.comments = comments.filter(post_id=post.id)
+
     context = {'posts': posts,
                'users': users,
-               'profile': profile,
-               'comments': comments}
+               'profile': profile, }
     if request.method == 'POST':
         data = request.POST
         # print(data)

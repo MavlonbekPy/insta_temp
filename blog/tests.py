@@ -1,4 +1,3 @@
-from django.test import TestCase
 from collections import defaultdict
 
 posts = [
@@ -46,68 +45,40 @@ comments = [
 
 ...
 
-print(posts)
+# print(posts)
 
-result = [
-    {
-        'id': 3,
-        'title': 'a',
-        'comments': [
-            {
-                'id': 4,
-                'post': 1,
-                'message': 'a2'
-            },
-            {
-                'id': 5,
-                'post': 1,
-                'message': 'a2'
-            }
-        ]
-    },
-    {
-        'id': 2,
-        'title': 'b',
-        'comments': [
-            {
-                'id': 1,
-                'post': 2,
-                'message': 'b2'
-            },
-            {
-                'id': 3,
-                'post': 2,
-                'message': 'b2'
-            }
-        ]
-    },
-    {
-        'id': 1,
-        'title': 'c',
-        'comments': [
-            {
-                'id': 2,
-                'post': 3,
-                'message': 'c2'
-            }
-        ]
-    },
-]
 
-post_comments = defaultdict(list)
-for comment in comments:
-    post_comments[comment['post']].append(comment)
+# post_comments = defaultdict(list)
+# for comment in comments:
+#     post_comments[comment['post']].append(comment)
+#
+# res = []
+# for post in posts:
+#     post_data = {
+#         'id': post['id'],
+#         'title': post['title'],
+#         'comments': post_comments.get(post['id'], [])
+#     }
+#     res.append(post_data)
+#
+# print(res)
 
-res = []
+# for post in posts:
+#     post_comments = []
+#     for comment in comments:
+#         if post['id'] == comment['post']:
+#             post_comments.append(comment)
+#         post['comments'] = post_comments
+#
+# for i in posts:
+#     print(i)
+#
+
 for post in posts:
-    post_data = {
-        'id': post['id'],
-        'title': post['title'],
-        'comments': post_comments.get(post['id'], [])
-    }
-    res.append(post_data)
+    post['comments'] = list(filter(lambda c: c['post'] == post['id'], comments))
 
-print(res)
+for i in posts:
+    print(i)
 
 posts = [
     {

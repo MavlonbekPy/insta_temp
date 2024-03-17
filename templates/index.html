@@ -331,7 +331,7 @@
                         </div>
 
                         <div class="border-t pt-4 space-y-4 ">
-                            {% for comment in comments %}
+                            {% for comment in post.comments %}
                                 <div class="flex">
                                     <div class="w-10 h-10 rounded-full relative flex-shrink-0">
                                         <img src="{{ comment.author.profile_picture.url }}" alt=""
