@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Post, FollowUser
+from .models import Post, FollowUser, LikePost
 from django.contrib.auth.decorators import login_required
 from authentication.models import MyUser
 
@@ -19,3 +19,13 @@ def follow(request):
     obj = FollowUser.objects.create(follower=follower, following=following)
     obj.save()
     return redirect('/')
+
+
+@login_required(login_url='auth/login')
+def like(request):
+    author = MyUser.objects.filter(user=request.user).first()
+    post_id = request.GET.get('post_id')
+    post = request.GET.get('post_id')
+    obj = LikePost.objects.create(author=author, post_id=post_id)
+    obj.save()
+    return redirect(f'/#{post_id}')
