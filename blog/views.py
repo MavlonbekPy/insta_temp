@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from .models import Post, FollowUser, LikePost, Comment
 from django.contrib.auth.decorators import login_required
 from authentication.models import MyUser
@@ -44,3 +44,11 @@ def like(request):
     obj = LikePost.objects.create(author=author, post_id=post_id)
     obj.save()
     return redirect(f'/#{post_id}')
+
+
+def test_sql(r):
+    post = Post.get_by_id(1)
+    print(post.image, post.created_at)
+    # for post in posts:
+    #     print(post.id, post.image, post.created_at)
+    return HttpResponse('Ok')
