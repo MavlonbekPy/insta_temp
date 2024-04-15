@@ -10,6 +10,9 @@ class Post(models.Model):
 
     is_published = models.BooleanField(default=True)
 
+    def get_like_count(self):
+        return self.likepost_set.count()
+
     def admin_photo(self):
         return mark_safe('<img src="{}" width="70" />'.format(self.image.url))
 

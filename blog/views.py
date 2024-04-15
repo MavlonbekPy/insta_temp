@@ -13,7 +13,7 @@ def home_view(request):
 
     for post in posts:
         # post.comments = list(filter(lambda c: c.post.id == post.id, comments))
-        post.comments = comments.filter(post_id=post.id)
+        post.comments = Comment.objects.filter(post_id=post.id)
 
     context = {'posts': posts,
                'users': users,
@@ -27,12 +27,28 @@ def home_view(request):
     return render(request, 'index.html', context=context)
 
 
+# @login_required(login_url='auth/login')
+# def follow(request):
+#     follower = MyUser.objects.filter(user=request.user).first()
+#     following = MyUser.objects.filter(id=request.GET.get('following_id')).first()
+#     obj = FollowUser.objects.create(follower=follower, following=following)
+#     obj.save()
+#     return redirect('/')
 @login_required(login_url='auth/login')
-def follow(request):
+def follow_unfollow(request):
     follower = MyUser.objects.filter(user=request.user).first()
     following = MyUser.objects.filter(id=request.GET.get('following_id')).first()
-    obj = FollowUser.objects.create(follower=follower, following=following)
-    obj.save()
+
+    try:
+        follow_obj = FollowUser.objects.get(follower=follower, following=following)
+        follow_obj.delete()
+        is_following = False
+    except FollowUser.DoesNotExist:
+        follow_obj = FollowUser.objects.create(follower=follower, following=following)
+        follow_obj.save()
+        is_following = True
+
+    context = {'is_following': is_following}
     return redirect('/')
 
 
@@ -40,9 +56,18 @@ def follow(request):
 def like(request):
     author = MyUser.objects.filter(user=request.user).first()
     post_id = request.GET.get('post_id')
-    post = request.GET.get('post_id')
-    obj = LikePost.objects.create(author=author, post_id=post_id)
-    obj.save()
+    post = Post.objects.filter(id=post_id).first()
+
+    if not post:
+        return redirect('/')
+
+    like_obj, created = LikePost.objects.get_or_create(author=author, post=post)
+
+    if not created:
+        like_obj.delete()
+    else:
+        like_obj.save()
+
     return redirect(f'/#{post_id}')
 
 
