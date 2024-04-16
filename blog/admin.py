@@ -3,17 +3,25 @@ from .models import Post, Comment, FollowUser, LikePost
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id', 'admin_photo', 'created_at')
+    list_display = ('id', 'author', 'admin_photo', 'created_at')
 
 
 class FollowUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'follower_username', 'created_at')
+    list_display = ('id', 'follower_username', 'following', 'created_at')
 
     def follower_username(self, obj):
         return obj.follower.user.username
 
 
+class LikePostAdmin(admin.ModelAdmin):
+    list_display = ('id', 'author', 'post', 'created_at')
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'author', 'post', 'created_at')
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(FollowUser, FollowUserAdmin)
-admin.site.register(Comment)
-admin.site.register(LikePost)
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(LikePost, LikePostAdmin)

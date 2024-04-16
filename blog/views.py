@@ -2,19 +2,21 @@ from django.shortcuts import render, redirect, HttpResponse
 from .models import Post, FollowUser, LikePost, Comment
 from django.contrib.auth.decorators import login_required
 from authentication.models import MyUser
+from django.contrib.postgres.search import SearchVector
 
 
 @login_required(login_url='auth/login')
 def home_view(request):
     profile = MyUser.objects.filter(user=request.user).first()
     following_users = FollowUser.objects.filter(follower=profile).values_list('following', flat=True)
+    suggested_users = MyUser.objects.exclude(id__in=following_users).exclude(id=profile.id)[:5]
     posts = Post.objects.filter(is_published=True, author__in=following_users)
     comments = Comment.objects.all()
 
     for post in posts:
         post.comments = Comment.objects.filter(post_id=post.id)
 
-    context = {'posts': posts, 'profile': profile}
+    context = {'posts': posts, 'profile': profile, 'suggested_users': suggested_users}
 
     if request.method == 'POST':
         data = request.POST
@@ -46,12 +48,12 @@ def follow_unfollow(request):
 @login_required(login_url='auth/login')
 def blog_search_view(request):
     query = request.GET.get('text')
+    users = MyUser.objects.all()
+
     if query:
         query = query.replace('+', ' ')
-        posts = Post.objects.filter(title__icontains=query)
-    else:
-        posts = Post.objects.all()
-    return render(request, 'index.html', {'posts': posts})
+        users = users.annotate(search=SearchVector('user__username')).filter(search__icontains=query)
+    return render(request, 'index.html', {'users': users})
 
 
 @login_required(login_url='auth/login')
