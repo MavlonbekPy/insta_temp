@@ -6,34 +6,25 @@ from authentication.models import MyUser
 
 @login_required(login_url='auth/login')
 def home_view(request):
-    posts = Post.objects.filter(is_published=True)
-    users = MyUser.objects.all()[:4]
     profile = MyUser.objects.filter(user=request.user).first()
+    following_users = FollowUser.objects.filter(follower=profile).values_list('following', flat=True)
+    posts = Post.objects.filter(is_published=True, author__in=following_users)
     comments = Comment.objects.all()
 
     for post in posts:
-        # post.comments = list(filter(lambda c: c.post.id == post.id, comments))
         post.comments = Comment.objects.filter(post_id=post.id)
 
-    context = {'posts': posts,
-               'users': users,
-               'profile': profile, }
+    context = {'posts': posts, 'profile': profile}
+
     if request.method == 'POST':
         data = request.POST
-        # print(data)
         obj = Comment.objects.create(author=profile, message=data['message'], post_id=data['post_id'])
         obj.save()
         return redirect(f'/#{data["post_id"]}')
+
     return render(request, 'index.html', context=context)
 
 
-# @login_required(login_url='auth/login')
-# def follow(request):
-#     follower = MyUser.objects.filter(user=request.user).first()
-#     following = MyUser.objects.filter(id=request.GET.get('following_id')).first()
-#     obj = FollowUser.objects.create(follower=follower, following=following)
-#     obj.save()
-#     return redirect('/')
 @login_required(login_url='auth/login')
 def follow_unfollow(request):
     follower = MyUser.objects.filter(user=request.user).first()
@@ -50,6 +41,17 @@ def follow_unfollow(request):
 
     context = {'is_following': is_following}
     return redirect('/')
+
+
+@login_required(login_url='auth/login')
+def blog_search_view(request):
+    query = request.GET.get('text')
+    if query:
+        query = query.replace('+', ' ')
+        posts = Post.objects.filter(title__icontains=query)
+    else:
+        posts = Post.objects.all()
+    return render(request, 'index.html', {'posts': posts})
 
 
 @login_required(login_url='auth/login')
@@ -70,10 +72,9 @@ def like(request):
 
     return redirect(f'/#{post_id}')
 
-
-def test_sql(r):
-    post = Post.get_by_id(1)
-    print(post.image, post.created_at)
-    # for post in posts:
-    #     print(post.id, post.image, post.created_at)
-    return HttpResponse('Ok')
+# def test_sql(r):
+#     post = Post.get_by_id(1)
+#     print(post.image, post.created_at)
+#     # for post in posts:
+#     #     print(post.id, post.image, post.created_at)
+#     return HttpResponse('Ok')
