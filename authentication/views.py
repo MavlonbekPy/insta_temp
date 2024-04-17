@@ -4,12 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form)
+def register_view(request):
+    return render(request, 'signup.html')
 
 
 def login_view(request):

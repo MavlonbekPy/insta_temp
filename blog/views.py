@@ -74,6 +74,10 @@ def like(request):
 
     return redirect(f'/#{post_id}')
 
+
+def settings_view(request):
+    return render(request, 'setting.html')
+
 # def test_sql(r):
 #     post = Post.get_by_id(1)
 #     print(post.image, post.created_at)
