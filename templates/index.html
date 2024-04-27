@@ -24,12 +24,12 @@
         <div class="left-side">
             <!-- Logo -->
             <div id="logo" class=" uk-hidden@s">
-                <a href="home.html">
+                <a href="/">
                     <b><h1 style="text-transform: uppercase;">Social Book</h1></b>
                 </a>
             </div>
             <div class="header_search">
-                <form action="{% url 'blog_search_view' %}" method="GET">
+                <form action="{% url 'search_view' %}" method="GET">
                     <input type="text" name="text" placeholder="Search for username..">
                     <button type="submit" class="icon-search">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,12 +42,27 @@
         </div>
         <div class="right-side lg:pr-4">
             <!-- upload -->
-            <a href="#"
-               class="bg-pink-500 flex font-bold hidden hover:bg-pink-600 hover:text-white inline-block items-center lg:block max-h-10 mr-4 px-4 py-2 rounded shado text-white">
-                <ion-icon name="add-circle" class="-mb-1
-                             mr-1 opacity-90 text-xl uilus-circle"></ion-icon>
-                Upload Pics / Videos
-            </a>
+{#            <a href="#"#}
+{#               class="bg-pink-500 flex font-bold hidden hover:bg-pink-600 hover:text-white inline-block items-center lg:block max-h-10 mr-4 px-4 py-2 rounded shado text-white">#}
+{#                <ion-icon name="add-circle" class="-mb-1#}
+{#                             mr-1 opacity-90 text-xl uilus-circle"></ion-icon>#}
+{#                Upload Pics / Videos#}
+{#            </a>#}
+            <p class="my-3 leading-6"></p>
+                        <form action="/upload/" method="POST">
+                            <div uk-form-custom>
+                                {% csrf_token %}
+
+                                <input name="file" type="file">
+                                <a href="#" class="button soft-warning small"></a>
+
+                            </div>
+                            <button style="padding: 7px 20px;
+                            background-color: #0E2231; color: #fff;
+                            border-radius: 3px; display: block" type="submit">
+                                Submit
+                            </button>
+                        </form>
             <!-- upload dropdown box -->
             <div uk-dropdown="pos: top-right;mode:click ; animation: uk-animation-slide-bottom-small"
                  class="header_dropdown">
@@ -363,7 +378,7 @@
                     {% for user in suggested_users %}
                         <div class="flex items-center justify-between py-3">
                             <div class="flex flex-1 items-center space-x-4">
-                                <a href="profile.html">
+                                <a href="profile/">
                                     <img src="{{ user.profile_picture.url }}"
                                          class="bg-gray-200 rounded-full w-10 h-10">
                                 </a>

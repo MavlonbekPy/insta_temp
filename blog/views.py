@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Post, FollowUser, LikePost, Comment
 from django.contrib.auth.decorators import login_required
 from authentication.models import MyUser
 from django.contrib.postgres.search import SearchVector
+from .models import Image
+from django.http import FileResponse
 
 
 @login_required(login_url='auth/login')
@@ -45,15 +47,41 @@ def follow_unfollow(request):
     return redirect('/')
 
 
-@login_required(login_url='auth/login')
-def blog_search_view(request):
-    query = request.GET.get('text')
-    users = MyUser.objects.all()
+def serve_image(request, image_id):
+    image = get_object_or_404(Image, id=image_id)
+    image_path = image.file.path
+    return FileResponse(open(image_path, 'rb'))
 
-    if query:
-        query = query.replace('+', ' ')
-        users = users.annotate(search=SearchVector('user__username')).filter(search__icontains=query)
-    return render(request, 'index.html', {'users': users})
+
+@login_required(login_url='/auth/login')
+def upload(request):
+    if request.method == 'POST':
+        Post.objects.create(author_id=request.user.id,
+                            image=request.POST['file']).save()
+        return redirect('/')
+
+
+#
+@login_required(login_url='auth/login')
+def search_view(request):
+    query = request.GET.get('text')
+    query = query.lower()
+    user = MyUser.objects.filter(user__username__contains=query)
+
+    if user:
+        return redirect(f'{user}/')  # profiliga otkazvorasiz
+    return redirect('/')
+
+
+# def search_view(request):
+#     text = request.GET.get('q')
+#     text = text.lower()
+#     print(text)
+#     if text:
+#         user = MyUser.objects.filter(user__username=text).first()
+#         if user:
+#             return redirect(f'{user.id}/')
+#     return redirect('/')
 
 
 @login_required(login_url='auth/login')
@@ -73,6 +101,10 @@ def like(request):
         like_obj.save()
 
     return redirect(f'/#{post_id}')
+
+
+def profile_view(request):
+    return render(request, 'profile.html')
 
 
 def settings_view(request):

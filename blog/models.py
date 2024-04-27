@@ -38,6 +38,11 @@ class Post(models.Model):
         raise ObjectDoesNotExist('No such post')
 
 
+class Image(models.Model):
+    file = models.ImageField(upload_to='images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
 class Comment(models.Model):
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
